@@ -396,6 +396,29 @@ public class TestFilteredPropertyExport extends IntegrationTestBase {
         return tmpFile;
     }
 
+
+    @Test
+    public void filterRelativePropertiesSingleSet_NotDeep_no_propertyFilter_addNodesExclude() throws IOException, RepositoryException, PackageException {
+
+        PathFilterSet nodes = new PathFilterSet("/tmp");
+
+        DefaultWorkspaceFilter filter = new DefaultWorkspaceFilter();
+        nodes.addExclude(new DefaultPathFilter(".*"));
+
+
+        filter.add(nodes);
+        System.out.println(filter.getSourceAsString());
+
+
+        // export and extract
+        File pkgFile = assemblePackage(filter);
+        clean("/tmp");
+        packMgr.open(pkgFile).extract(admin, getDefaultOptions());
+        // validate the extracted content
+        assertNodeMissing("/tmp");
+
+    }
+
     private void assertPropertiesExist(String rootPath, String... propNames)
             throws RepositoryException {
         for (String propName : propNames) {
